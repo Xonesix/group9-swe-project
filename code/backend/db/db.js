@@ -145,7 +145,6 @@ export async function getEmail(user_id) {
     const res = await client.query(query, values);
     return res.rows[0].email;
   } catch (error) {
-    console.error(error);
     throw Error(`Some Error ${error}`);
   }
 }
@@ -156,28 +155,52 @@ export async function getEmail(user_id) {
 // sendNotification
 
 async function getUserIdFromEmail(email) {
-  // Internal Function
   if (!client) await connectDB();
-  const query = `
-  SELECT id FROM users WHERE email = $1
-  `;
+  const query = `SELECT id FROM users WHERE email = $1`;
   const values = [email];
+
   try {
     const res = await client.query(query, values);
-    if (res.rows.length === 0) {
-      return null;
-    }
-    return res.rows[0].id;
+    return res.rows.length > 0 ? res.rows[0].id : null;
   } catch (error) {
-    console.error(error);
-    throw Error(`Error getting userId From Email Internal Function ${error}`);
+    throw new Error(`Error getting userId from email: ${error.message}`);
   }
 }
 
-export async function sendInvite(sender_id, recipient_id, team_invited_to_id) {}
+export async function sendInvite(
+  sender_id,
+  recipient_email,
+  team_invited_to_id
+) {
+  if (!client) await connectDB();
+
+  const recipient_id = await getUserIdFromEmail(recipient_email);
+  if (!recipient_id) {
+    throw new Error(`No such user exists with email ${recipient_email}`);
+  }
+
+  const query = `
+    INSERT INTO invitations (team_id, inviter_id, invitee_id, status) 
+    VALUES ($1, $2, $3, 'pending')
+  `;
+  const values = [team_invited_to_id, sender_id, recipient_id];
+
+  try {
+    const res = await client.query(query, values);
+    return res.rowCount === 1
+      ? { success: true, message: "Invitation sent successfully" }
+      : { success: false, message: "Failed to send invitation" };
+  } catch (error) {
+    throw new Error(`Error sending invitation: ${error.message}`);
+  }
+}
+
 export async function handleInvite(invite_id, invitee_id) {
   // Check if this invitee is authorized to even handle this particular invite FIRST
+  //  Update time updated && status of invite
+  // Add user to team if accepted
 }
+export async function getAllNotifications(user_id) {}
 
 process.on("SIGINT", async () => {
   await closeDB();

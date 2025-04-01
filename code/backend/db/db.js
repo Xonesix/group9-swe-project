@@ -293,6 +293,27 @@ export async function getAllNotifications(user_id) {
   }
 }
 
+// Messaging In Teams
+/*
+
+View Participants
+Send Message (validate if can)
+View All Messages (validate if can)
+
+
+*/
+
+// Use this method before any of the message methods (middleware)
+export async function validateUserInTeam(user_id, team_id) {
+  return { success: false };
+}
+
+// MEssage Methods
+export async function getAllParticipantsInTeam(user_id, team_id) {}
+export async function viewMessagesInTeam(team_id) {}
+
+export async function sendMessageInTeam(user_id, team_id) {}
+
 process.on("SIGINT", async () => {
   await closeDB();
   process.exit(0);

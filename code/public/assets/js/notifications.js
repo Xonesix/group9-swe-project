@@ -49,8 +49,10 @@ function hydrateButtons() {
 
       console.log(`Accepted ${invite_id}`);
       const result = await handleInvite(invite_id, "accept");
-      if (result) console.log("success accepting");
-      else console.error("error accepting");
+      if (result) {
+        console.log("success accepting");
+        parentDiv.remove();
+      } else console.error("error accepting");
     });
   }
   for (const button of decline_buttons) {
@@ -59,8 +61,10 @@ function hydrateButtons() {
       const invite_id = parentDiv.dataset.id;
       const result = await handleInvite(invite_id, "reject");
       console.log(`Declined ${invite_id}`);
-      if (result) console.log("success rejecting");
-      else console.error("error rejecting");
+      if (result) {
+        console.log("success rejecting");
+        parentDiv.remove();
+      } else console.error("error rejecting");
     });
   }
 }

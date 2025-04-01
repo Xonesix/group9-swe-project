@@ -9,6 +9,7 @@
   flex-direction: column;
   align-items: center;
   height: 100%;
+  position: relative;
 }
 .message-box {
   margin-top: auto;
@@ -80,4 +81,120 @@
 }
 .message-card {
   color: white;
+}
+
+/* INVITE */
+.menu-bar {
+  display: flex;
+  align-items: center;
+}
+.sub-heading {
+  margin-left: auto;
+  margin-right: 3rem;
+  border: none;
+  padding-inline: 1.2rem;
+  padding-block: 0.5rem;
+  background-color: var(--accent-one);
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all ease-in-out 0.2s;
+  cursor: pointer;
+}
+.sub-heading:hover {
+  transform: scale(105%) rotate(1deg);
+  background-color: rgb(64, 64, 215);
+}
+
+.invite-form-container {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.25);
+  transition: all ease-in-out 0.2s;
+}
+.invite-form-container.active {
+  opacity: 100%;
+  visibility: visible;
+}
+#invite-form {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--dark-gray);
+  padding: 3rem;
+  color: white;
+  gap: 1rem;
+  border-radius: 10px;
+}
+.invite-input-field {
+  display: flex;
+  flex-direction: column;
+}
+.send-invite-button {
+  border: none;
+  padding-inline: 1.2rem;
+  padding-block: 0.5rem;
+  background-color: var(--accent-one);
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all ease-in-out 0.2s;
+  cursor: pointer;
+  width: 100%;
+}
+.send-invite-button:hover {
+  transform: scale(105%) rotate(1deg);
+  background-color: rgb(64, 64, 215);
+}
+.invite-input-field input {
+  background-color: var(--gray);
+  outline: none;
+  border: none;
+  padding-inline: 0.5rem;
+  padding-block: 0.5rem;
+  font-size: 14px;
+  border-radius: 4px;
+  color: white;
+  border: solid transparent 2px;
+  transition: border ease-in-out 0.2s;
+}
+.invite-input-field label {
+  font-size: 12px;
+  font-weight: bold;
+  color: rgb(150, 150, 150);
+  margin-bottom: 2px;
+}
+
+.error-text {
+  font-size: 14px;
+  color: red;
+  font-weight: 500;
+  display: none;
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.send-invite-button.cancel {
+  background-color: rgb(176, 51, 51);
+}
+
+.send-invite-button.cancel:hover {
+  transform: scale(105%) rotate(-1deg);
 }

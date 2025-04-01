@@ -50,7 +50,25 @@
       </div>
       <div class="main-page">
         <div class="menu-bar">
-          <h1>Chat</h1>
+          <h1 class="heading">Chat</h1>
+          <button class="sub-heading" type="button">
+            <svg
+              class="w-6 h-6 text-gray-800 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1a1 1 0 0 1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Invite
+          </button>
         </div>
         <div class="chat-container">
           <div class="messages">
@@ -83,8 +101,31 @@
               </div>
             </form>
           </div>
+          <div class="invite-form-container">
+            <form action="" id="invite-form">
+              <h2>Invite user to team.</h2>
+              <div class="invite-input-field">
+                <label for="">Enter email of invitee</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter Email"
+                  id="invitee_email"
+                />
+              </div>
+
+              <p class="error-text">Something did/didn't happen</p>
+              <div class="button-container">
+                <button type="button" class="send-invite-button cancel">
+                  Cancel
+                </button>
+                <button type="submit" class="send-invite-button">Invite</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
+    <script src="../assets/js/chat.js"></script>
   </body>
 </html>

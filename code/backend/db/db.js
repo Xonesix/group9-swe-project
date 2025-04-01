@@ -145,7 +145,7 @@ export async function getEmail(user_id) {
     const res = await client.query(query, values);
     return res.rows[0].email;
   } catch (error) {
-    throw Error(`Some Error ${error}`);
+    throw new Error(`Some Error ${error}`);
   }
 }
 
@@ -194,13 +194,89 @@ export async function sendInvite(
     throw new Error(`Error sending invitation: ${error.message}`);
   }
 }
+// Internal Validate Invite Function and Reject Invite
+async function validateInvite(invite_id, invitee_id) {
+  if (!client) await connectDB();
+  const query = `
+    SELECT team_id, status FROM invitations 
+    WHERE id = $1 AND invitee_id = $2
+  `;
+  const values = [invite_id, invitee_id];
+  const result = await client.query(query, values);
+  if (result.rows.length === 0) {
+    throw new Error("Invalid Invitation or unauthorized access");
+  }
+  const { team_id, status } = result.rows[0];
 
-export async function handleInvite(invite_id, invitee_id) {
-  // Check if this invitee is authorized to even handle this particular invite FIRST
-  //  Update time updated && status of invite
-  // Add user to team if accepted
+  if (status !== "pending") {
+    throw new Error("This invitation has already been processed");
+  }
+  return team_id;
 }
-export async function getAllNotifications(user_id) {}
+
+async function updateInviteStatus(invite_id, status) {
+  if (!client) await connectDB();
+  const query = `
+    UPDATE invitations 
+    SET status = $1, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    RETURNING *
+  `;
+  const values = [status, invite_id];
+  const result = await client.query(query, values);
+  return result.rows[0];
+}
+
+export async function handleInvite(invite_id, invitee_id, action) {
+  if (!client) await connectDB();
+  try {
+    // Validate Invite
+    const team_id = await validateInvite(invite_id, invitee_id);
+
+    if (action === "accept") {
+      // Add invitee to the team
+      const addUserQuery = `
+        INSERT INTO user_teams_link (user_id, team_id) 
+        VALUES ($1, $2) 
+        ON CONFLICT DO NOTHING
+      `;
+      await client.query(addUserQuery, [invitee_id, team_id]);
+
+      // Update invitation status
+      await updateInviteStatus(invite_id, "accepted");
+
+      return { success: true, message: "Invitation accepted successfully" };
+    } else if (action === "reject") {
+      // Update invitation status instead of deleting
+      await updateInviteStatus(invite_id, "rejected");
+
+      return { success: true, message: "Invitation rejected successfully" };
+    } else {
+      throw new Error("Invalid action specified");
+    }
+  } catch (error) {
+    throw new Error(`Error handling invitation: ${error.message}`);
+  }
+}
+export async function getAllNotifications(user_id) {
+  if (!client) await connectDB();
+  try {
+    const query = `
+    SELECT i.*, t.name as team_name, u.email as inviter_email 
+    FROM invitations i
+    JOIN teams t ON i.team_id = t.id
+    JOIN users u ON i.inviter_id = u.id
+    WHERE i.invitee_id = $1
+    ORDER BY i.created_at DESC
+    `;
+    const values = [user_id];
+    const result = await client.query(query, values);
+
+    return result.rows;
+  } catch (error) {
+    throw new Error(`Error fetching notifications: ${error.message}`);
+  }
+}
 
 process.on("SIGINT", async () => {
   await closeDB();

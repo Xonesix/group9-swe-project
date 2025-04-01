@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="stylesheet" href="../assets/css/dashboard.css" />
+    <link rel="stylesheet" href="../assets/css/chat.css" />
+  </head>
+  <body>
+    <!-- Templates -->
+    <template id="team-card-template">
+      <div class="team-card">
+        <h2 class="team-name"></h2>
+        <a href="#" class="chat-button">Notifications</a>
+      </div>
+    </template>
+    <!-- Templates -->
+    <div class="app">
+      <div class="navigation-menu">
+        <h1 class="logo">LOGO</h1>
+        <div class="nav-link">
+          <div class="icon">
+            <svg
+              width="800px"
+              height="800px"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g>
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path
+                  fill="currentColor"
+                  fill-rule="nonzero"
+                  d="M12 11a5 5 0 0 1 5 5v6h-2v-6a3 3 0 0 0-2.824-2.995L12 13a3 3 0 0 0-2.995 2.824L9 16v6H7v-6a5 5 0 0 1 5-5zm-6.5 3c.279 0 .55.033.81.094a5.947 5.947 0 0 0-.301 1.575L6 16v.086a1.492 1.492 0 0 0-.356-.08L5.5 16a1.5 1.5 0 0 0-1.493 1.356L4 17.5V22H2v-4.5A3.5 3.5 0 0 1 5.5 14zm13 0a3.5 3.5 0 0 1 3.5 3.5V22h-2v-4.5a1.5 1.5 0 0 0-1.356-1.493L18.5 16c-.175 0-.343.03-.5.085V16c0-.666-.108-1.306-.309-1.904.259-.063.53-.096.809-.096zm-13-6a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm13 0a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm-13 2a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1zm13 0a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1zM12 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
+                />
+              </g>
+            </svg>
+          </div>
+          <p>Teams</p>
+        </div>
+        <div class="nav-link">
+          <div class="icon">ICON</div>
+          <p>Calendar</p>
+        </div>
+        <div class="account">
+          <p class="account-name">Account-Name</p>
+        </div>
+      </div>
+      <div class="main-page">
+        <div class="menu-bar">
+          <h1>Chat</h1>
+        </div>
+        <div class="chat-container">
+          <div class="messages">
+            <div class="message-card">
+              <p>Test Message One</p>
+            </div>
+            <div class="message-card">
+              <p>Test Message two</p>
+            </div>
+          </div>
+          <div class="message-box">
+            <form action="" class="message-container">
+              <div class="message-input">
+                <input type="text" autocomplete="none" />
+              </div>
+              <div class="send-button">
+                <button type="submit" class="submit-message-button">
+                  <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M20.33 3.66996C20.1408 3.48213 19.9035 3.35008 19.6442 3.28833C19.3849 3.22659 19.1135 3.23753 18.86 3.31996L4.23 8.19996C3.95867 8.28593 3.71891 8.45039 3.54099 8.67255C3.36307 8.89471 3.25498 9.16462 3.23037 9.44818C3.20576 9.73174 3.26573 10.0162 3.40271 10.2657C3.5397 10.5152 3.74754 10.7185 4 10.85L10.07 13.85L13.07 19.94C13.1906 20.1783 13.3751 20.3785 13.6029 20.518C13.8307 20.6575 14.0929 20.7309 14.36 20.73H14.46C14.7461 20.7089 15.0192 20.6023 15.2439 20.4239C15.4686 20.2456 15.6345 20.0038 15.72 19.73L20.67 5.13996C20.7584 4.88789 20.7734 4.6159 20.7132 4.35565C20.653 4.09541 20.5201 3.85762 20.33 3.66996ZM4.85 9.57996L17.62 5.31996L10.53 12.41L4.85 9.57996ZM14.43 19.15L11.59 13.47L18.68 6.37996L14.43 19.15Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

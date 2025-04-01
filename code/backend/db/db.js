@@ -305,14 +305,86 @@ View All Messages (validate if can)
 
 // Use this method before any of the message methods (middleware)
 export async function validateUserInTeam(user_id, team_id) {
-  return { success: false };
+  if (!client) await connectDB();
+  const query = `
+    SELECT 1 
+    FROM user_teams_link 
+    WHERE user_id = $1 AND team_id = $2
+    LIMIT 1; 
+  `;
+  try {
+    const result = await client.query(query, values);
+
+    // CORRECT CHECK: Check the number of rows returned
+    if (result.rows.length === 0) {
+      // No row found, user is not in the team
+      return false;
+    } else {
+      // At least one row found (should be exactly one due to PK), user is in the team
+      return true;
+    }
+    // Or more concisely: return result.rows.length > 0;
+  } catch (error) {
+    console.error("Error validating user in team:", error);
+    // Handle query errors appropriately
+    // Depending on requirements, you might return false or throw the error
+    return false; // Example: treat query error as validation failure
+  }
 }
 
 // MEssage Methods
-export async function getAllParticipantsInTeam(user_id, team_id) {}
-export async function viewMessagesInTeam(team_id) {}
+export async function getAllParticipantsInTeam(team_id) {
+  const query = `
+  SELECT u.email
+  FROM users u
+  INNER JOIN
+  user_teams_link utl ON u.id = utl.user_id
+  WHERE utl.team_id = $1
+  `;
+  const values = [team_id];
+  if (!client) await connectDB();
+  try {
+    const result = await client.query(query, values);
 
-export async function sendMessageInTeam(user_id, team_id) {}
+    return result.rows;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+export async function viewMessagesInTeam(team_id) {
+  const query = `
+  SELECT m.content, m.created_at, u.email
+  FROM messages m 
+  INNER JOIN
+  users u ON m.sender_id = u.id
+  INNER JOIN
+  teams t ON m.team_id = t.id
+  WHERE t = $1
+  `;
+  const values = [team_id];
+  if (!client) await connectDB();
+  try {
+    const result = await client.query(query, values);
+
+    return result.rows;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function sendMessageInTeam(user_id, team_id, content) {
+  const query = `
+    INSERT into messages (team_id, sender_id, content) VALUES ($1, $2, $3)
+  `;
+  const values = [team_id, user_id, content];
+  try {
+    const result = await client.query(query, values);
+
+    return { success: true, rows: result.rows };
+  } catch (error) {
+    throw new Error(error);
+  }
+}
 
 process.on("SIGINT", async () => {
   await closeDB();

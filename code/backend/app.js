@@ -297,6 +297,14 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-// TO DO
+// Messages To Do
+/* 
+  Make sure that
+  Make api to app.get("/api/protect/message")
+  If user not in field, return unauthorized, and redirect back to home page
+
+*/
+
+// General TO DO
 //  websocket messages
 //  WebRTC video meetings

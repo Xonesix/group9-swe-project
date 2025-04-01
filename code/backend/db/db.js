@@ -150,6 +150,35 @@ export async function getEmail(user_id) {
   }
 }
 
+// NOTIFICATION FUNCTIONALITY
+// getAllNotifications
+// handleNotification
+// sendNotification
+
+async function getUserIdFromEmail(email) {
+  // Internal Function
+  if (!client) await connectDB();
+  const query = `
+  SELECT id FROM users WHERE email = $1
+  `;
+  const values = [email];
+  try {
+    const res = await client.query(query, values);
+    if (res.rows.length === 0) {
+      return null;
+    }
+    return res.rows[0].id;
+  } catch (error) {
+    console.error(error);
+    throw Error(`Error getting userId From Email Internal Function ${error}`);
+  }
+}
+
+export async function sendInvite(sender_id, recipient_id, team_invited_to_id) {}
+export async function handleInvite(invite_id, invitee_id) {
+  // Check if this invitee is authorized to even handle this particular invite FIRST
+}
+
 process.on("SIGINT", async () => {
   await closeDB();
   process.exit(0);

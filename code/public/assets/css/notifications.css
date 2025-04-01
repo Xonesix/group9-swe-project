@@ -1,0 +1,50 @@
+:root {
+  --accent-one: rgb(75, 75, 255);
+  --light-gray: rgb(149, 149, 149);
+  --gray: rgb(45, 45, 45);
+  --dark-gray: rgb(25, 25, 25);
+}
+.notification-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.notification-card {
+  background-color: var(--dark-gray);
+  padding: 1rem;
+  color: white;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.notification-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+.notification-button-container {
+  display: flex;
+  gap: 1rem;
+}
+.notification-button-container > .button {
+  padding-inline: 1rem;
+  padding-block: 0.5rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  transition: transform ease-in-out 0.2s, border ease-in-out 0.2s;
+  cursor: pointer;
+  color: white;
+  border: solid transparent 2px;
+}
+.notification-button-container > .button:hover,
+.button:focus {
+  outline: none;
+  transform: translateY(-3px);
+  border: solid white 2px;
+}
+.accept.button {
+  background-color: green;
+}
+.decline.button {
+  background-color: red;
+}

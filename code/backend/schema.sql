@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS invitations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
     inviter_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    invitee_email VARCHAR(255) NOT NULL,
+    invitee_id UUID REFERENCES users(id) ON DELETE CASCADE,
     status VARCHAR(20) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

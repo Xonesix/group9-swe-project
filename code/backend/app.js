@@ -14,6 +14,10 @@ import {
   handleInvite,
   getAllNotifications,
   validateInviter,
+  validateUserInTeam,
+  getAllParticipantsInTeam,
+  viewMessagesInTeam,
+  sendMessageInTeam,
 } from "./db/db.js";
 import { addSession, verifySession } from "./db/redis.js";
 import cookieParser from "cookie-parser";
@@ -291,20 +295,74 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+// Messages To Do
+/* 
+  Make sure that
+  Make api to app.get("/api/protected/message")
+  If user not in field, return unauthorized, and redirect back to home page
+
+*/
+
+app.get("/api/protected/get-participants-in-team", async (req, res) => {
+  const userId = req.userId;
+  const teamId = req.body.teamId;
+  const val = await validateUserInTeam(userId, teamId);
+  if (val) {
+    try {
+      const result = await getAllParticipantsInTeam(teamId);
+      return res.status(200).json({ participants: result });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  } else {
+    return res.status(401).json({ message: "You are unauthorized" });
+  }
+});
+app.get("/api/protected/view-messages-in-team", async (req, res) => {
+  const userId = req.userId;
+  const teamId = req.body.teamId;
+  const val = await validateUserInTeam(userId, teamId);
+  if (val) {
+    try {
+      const result = await viewMessagesInTeam(teamId);
+      return res.status(200).json({ messages: result });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  } else {
+    return res.status(401).json({ message: "You are unauthorized" });
+  }
+});
+
+app.post("/api/protected/send-message-in-team", async (req, res) => {
+  const userId = req.userId;
+  const teamId = req.body.teamId;
+  const content = req.body.content;
+  const val = await validateUserInTeam(userId, teamId);
+  if (val) {
+    try {
+      const result = await sendMessageInTeam(userId, teamId, content);
+      if (result.success) {
+        return res.status(200).json({ message: "Message sent successfully" });
+      } else {
+        return res.status(400).json({ message: "Unauthorized" });
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Something went wrong" });
+    }
+  } else {
+    return res.status(401).json({ message: "You are unauthorized" });
+  }
+});
+
+// General TO DO
+//  websocket messages
+//  WebRTC video meetings
 // Exit Functions
 process.on("SIGINT", async () => {
   await closeDB();
   process.exit(0);
 });
-
-// Messages To Do
-/* 
-  Make sure that
-  Make api to app.get("/api/protect/message")
-  If user not in field, return unauthorized, and redirect back to home page
-
-*/
-
-// General TO DO
-//  websocket messages
-//  WebRTC video meetings

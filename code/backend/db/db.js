@@ -166,6 +166,21 @@ async function getUserIdFromEmail(email) {
     throw new Error(`Error getting userId from email: ${error.message}`);
   }
 }
+export async function validateInviter(user_id, team_id) {
+  // If user is part of team, return true;
+  if (!client) await connectDB();
+
+  // Check if user is part of team
+  const query = `SELECT 1 FROM user_teams_link WHERE team_id = $1 AND user_id = $2`;
+  const values = [team_id, user_id];
+
+  try {
+    const result = await client.query(query, values);
+    return result.rows.length > 0; // Returns true if user is in team, false otherwise
+  } catch (error) {
+    throw new Error(`Error validating team membership: ${error.message}`);
+  }
+}
 
 export async function sendInvite(
   sender_id,

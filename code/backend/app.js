@@ -303,7 +303,7 @@ app.listen(PORT, () => {
 
 */
 
-app.get("/api/protected/get-participants-in-team", async (req, res) => {
+app.post("/api/protected/get-participants-in-team", async (req, res) => {
   const userId = req.userId;
   const teamId = req.body.teamId;
   const val = await validateUserInTeam(userId, teamId);

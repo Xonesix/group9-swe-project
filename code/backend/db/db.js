@@ -312,6 +312,7 @@ export async function validateUserInTeam(user_id, team_id) {
     WHERE user_id = $1 AND team_id = $2
     LIMIT 1; 
   `;
+  const values = [user_id, team_id];
   try {
     const result = await client.query(query, values);
 

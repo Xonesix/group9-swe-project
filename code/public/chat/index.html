@@ -16,6 +16,15 @@
         <a href="#" class="chat-button">Chat</a>
       </div>
     </template>
+    <template id="message-card-template">
+      <div class="message-card">
+        <div class="message-content-container">
+          <p class="messenger-email"></p>
+          <sub class="date-created"></sub>
+          <p class="message-content"></p>
+        </div>
+      </div>
+    </template>
     <template id="participant-card-template">
       <div class="participant-card">
         <p class="participant-email">test@email.com</p>
@@ -82,18 +91,11 @@
           </div>
         </div>
         <div class="chat-container">
-          <div class="messages">
-            <div class="message-card">
-              <p>Test Message One</p>
-            </div>
-            <div class="message-card">
-              <p>Test Message two</p>
-            </div>
-          </div>
+          <div class="messages"></div>
           <div class="message-box">
-            <form action="" class="message-container">
+            <form action="" class="message-container" id="message-send-form">
               <div class="message-input">
-                <input type="text" autocomplete="none" />
+                <input type="text" autocomplete="none" name="content" />
               </div>
               <div class="send-button">
                 <button type="submit" class="submit-message-button">
@@ -142,6 +144,34 @@
                   <sub>Email</sub>
                   <sub>Status</sub>
                 </div>
+              </div>
+              <div class="x-button">
+                <svg
+                  viewBox="0 0 512 512"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                >
+                  <title>cancel</title>
+                  <g
+                    id="Page-1"
+                    stroke="none"
+                    stroke-width="1"
+                    fill="none"
+                    fill-rule="evenodd"
+                  >
+                    <g
+                      id="work-case"
+                      fill="currentColor"
+                      transform="translate(91.520000, 91.520000)"
+                    >
+                      <polygon
+                        id="Close"
+                        points="328.96 30.2933333 298.666667 1.42108547e-14 164.48 134.4 30.2933333 1.42108547e-14 1.42108547e-14 30.2933333 134.4 164.48 1.42108547e-14 298.666667 30.2933333 328.96 164.48 194.56 298.666667 328.96 328.96 298.666667 194.56 164.48"
+                      ></polygon>
+                    </g>
+                  </g>
+                </svg>
               </div>
             </div>
           </div>

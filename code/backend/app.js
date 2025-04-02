@@ -358,6 +358,44 @@ app.post("/api/protected/send-message-in-team", async (req, res) => {
   }
 });
 
+app.post("/api/protected/view-messages-in-team", async (req, res) => {
+  const userId = req.userId;
+  const teamId = req.body.teamId;
+  try {
+    const validate = await validateUserInTeam(userId, teamId);
+    if (validate) {
+      const rows = await viewMessagesInTeam(teamId);
+      return res.status(200).json({ messages: rows });
+    } else {
+      return res.status(400).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+app.post("/api/protected/send-message-in-team", async (req, res) => {
+  try {
+    const userId = req.userId;
+    const teamId = req.body.teamId;
+    const content = req.body.content;
+    const validate = await validateUserInTeam(teamId);
+
+    if (validate) {
+      const response = await sendMessageInTeam(userId, teamId, content);
+      if (response.success) {
+        return res.status(200).json({ message: "Message sent successfully" });
+      } else {
+        return res.status(400).json({ message: "Message unable to send" });
+      }
+    } else {
+      return res.status(400).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+});
 // General TO DO
 //  websocket messages
 //  WebRTC video meetings

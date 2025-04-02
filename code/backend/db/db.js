@@ -355,12 +355,13 @@ export async function getAllParticipantsInTeam(team_id) {
 export async function viewMessagesInTeam(team_id) {
   const query = `
   SELECT m.content, m.created_at, u.email
-  FROM messages m 
-  INNER JOIN
-  users u ON m.sender_id = u.id
-  INNER JOIN
-  teams t ON m.team_id = t.id
-  WHERE t = $1
+FROM messages m 
+INNER JOIN
+users u ON m.sender_id = u.id
+INNER JOIN
+teams t ON m.team_id = t.id
+WHERE t.id = $1
+ORDER BY m.created_at ASC
   `;
   const values = [team_id];
   if (!client) await connectDB();

@@ -58,7 +58,7 @@ async function hydrateEmail() {
 
     if (!response.ok) {
       account_name.textContent = "something went wrong";
-      window.location.href = "/login";
+      // window.location.href = "/login";
     }
 
     const result = await response.json();

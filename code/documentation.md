@@ -44,9 +44,13 @@ The front end hits up the express server which talks to the backend, everything 
 A lot of things to be done
 
 - Sign Out Mechanism
-- Chatting with others in a team
-- Inviting Others in a team
 - Calling Others In a Team
 - Creating Events for a Team
-- Chatting with others in a team
+- more intuitive ui
 - _and much much more_
+
+## Done
+
+- login register
+- Chatting with others in a team
+- Inviting Others in a team

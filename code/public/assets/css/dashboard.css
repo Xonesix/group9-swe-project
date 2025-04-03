@@ -45,10 +45,11 @@ body {
 .nav-link {
   width: 150px;
   height: 70px;
-  padding-block: 0.5rem;
+  padding-block: 0rem;
   display: flex;
-  flex-direction: column;
+
   justify-content: center;
+  gap: 2rem;
   align-items: center;
   border-radius: 10px;
   transition: all linear 0.2s;
@@ -57,12 +58,13 @@ body {
   background-color: rgb(45, 45, 45);
 }
 .icon > svg {
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 28px;
   color: white;
 }
-.nav-link > p {
-  margin: 0;
+.nav-link > a {
+  text-decoration: none;
+  color: white;
 }
 .account {
   margin-top: auto;

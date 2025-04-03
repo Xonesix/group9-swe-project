@@ -50,8 +50,8 @@ function messageSendHandler() {
       if (response.ok) {
         console.log("Message sent successfully");
         form.reset();
+
         // AYE MAKE SURE THIS USES WEB SOCKETS NEXT
-        location.reload(true);
       } else console.error(`${result.message}`);
     } catch (error) {
       console.error(`Something went wrong sending message ${error}`);

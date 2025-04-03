@@ -20,8 +20,13 @@ import {
   sendMessageInTeam,
 } from "./db/db.js";
 import { addSession, verifySession } from "./db/redis.js";
+import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
+import { createServer } from "http";
+import { text } from "stream/consumers";
 const app = express();
+const server = createServer(app);
+const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 
 // Startup Functions
@@ -106,7 +111,79 @@ app.get("/:folder/*", (req, res, next) => {
     }
   });
 });
-// TO-DO -> Register, Login, Session Middle Ware
+
+// SOCKETS
+const teamUsers = new Map(); // Maps teamId -> Set of socket IDs
+const socketToTeams = new Map(); // Maps socketId -> Set of teamIds for faster disconnection
+
+io.on("connection", (socket) => {
+  console.log("A user connected");
+  const cookies = socket.request.headers.cookie || "";
+  const userCookie = cookies
+    .split("; ")
+    .find((row) => row.startsWith("auth_token="))
+    ?.split("=")[1];
+  console.log(`Cookies ${userCookie}`);
+
+  socket.on("joinTeam", async ({ teamId }) => {
+    if (!userCookie) {
+      console.log("Session Failure (No Cookie)");
+      socket.emit("error", { message: "Authentication required" });
+      return;
+    }
+
+    try {
+      const result = await verifySession(userCookie);
+      const uid = result.userId;
+
+      // Pass both userId and teamId to validation
+      const response = await validateUserInTeam(uid, teamId);
+
+      if (response) {
+        console.log(`User ${uid} joining team ${teamId}`);
+
+        // Track team membership
+        if (!teamUsers.has(teamId)) {
+          teamUsers.set(teamId, new Set());
+        }
+        teamUsers.get(teamId).add(socket.id);
+
+        // Track socket's teams for easier cleanup
+        if (!socketToTeams.has(socket.id)) {
+          socketToTeams.set(socket.id, new Set());
+        }
+        socketToTeams.get(socket.id).add(teamId);
+
+        socket.join(teamId);
+        socket.emit("joinedTeam", { teamId });
+        console.log(`User added to team ${teamId}`);
+      } else {
+        socket.emit("error", { message: "Not authorized to join this team" });
+      }
+    } catch (error) {
+      console.error("Error in joinTeam:", error);
+      socket.emit("error", { message: "Server error while joining team" });
+    }
+  });
+
+  socket.on("disconnect", () => {
+    // More efficient disconnect handling
+    if (socketToTeams.has(socket.id)) {
+      for (const teamId of socketToTeams.get(socket.id)) {
+        const users = teamUsers.get(teamId);
+        if (users) {
+          users.delete(socket.id);
+          if (users.size === 0) {
+            teamUsers.delete(teamId);
+          }
+        }
+      }
+      socketToTeams.delete(socket.id);
+    }
+    console.log("User disconnected");
+  });
+});
+
 app.post("/api/register", async (req, res) => {
   // Store session -> return to home
   try {
@@ -291,9 +368,6 @@ app.post("/api/protected/handle-invite", async (req, res) => {
   }
 });
 // Starting Up
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
 
 // Messages To Do
 /* 
@@ -340,21 +414,37 @@ app.post("/api/protected/send-message-in-team", async (req, res) => {
   const userId = req.userId;
   const teamId = req.body.teamId;
   const content = req.body.content;
-  const val = await validateUserInTeam(userId, teamId);
-  if (val) {
-    try {
-      const result = await sendMessageInTeam(userId, teamId, content);
-      if (result.success) {
-        return res.status(200).json({ message: "Message sent successfully" });
-      } else {
-        return res.status(400).json({ message: "Unauthorized" });
-      }
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Something went wrong" });
+
+  try {
+    const val = await validateUserInTeam(userId, teamId);
+    if (!val) {
+      return res.status(401).json({ message: "You are unauthorized" });
     }
-  } else {
-    return res.status(401).json({ message: "You are unauthorized" });
+
+    const result = await sendMessageInTeam(userId, teamId, content);
+    if (!result.success) {
+      return res.status(400).json({ message: "Failed to send message" });
+    }
+
+    const email = await getEmail(userId);
+
+    // Even if no sockets are connected, message should be considered sent
+    // as it's stored in the database
+    io.to(teamId).emit("newMessage", {
+      sender: email,
+      text: content,
+      date: result.created_at,
+    });
+    const userEmail = await getEmail(userId);
+    return res.status(200).json({
+      message: "Message sent successfully",
+      date: result.created_at,
+      sender: userEmail,
+      text: content,
+    });
+  } catch (error) {
+    console.error("Error sending message:", error);
+    return res.status(500).json({ message: "Something went wrong" });
   }
 });
 
@@ -375,27 +465,10 @@ app.post("/api/protected/view-messages-in-team", async (req, res) => {
   }
 });
 
-app.post("/api/protected/send-message-in-team", async (req, res) => {
-  try {
-    const userId = req.userId;
-    const teamId = req.body.teamId;
-    const content = req.body.content;
-    const validate = await validateUserInTeam(teamId);
-
-    if (validate) {
-      const response = await sendMessageInTeam(userId, teamId, content);
-      if (response.success) {
-        return res.status(200).json({ message: "Message sent successfully" });
-      } else {
-        return res.status(400).json({ message: "Message unable to send" });
-      }
-    } else {
-      return res.status(400).json({ message: "Unauthorized" });
-    }
-  } catch (error) {
-    return res.status(500).json({ message: "Something went wrong" });
-  }
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
+
 // General TO DO
 //  websocket messages
 //  WebRTC video meetings

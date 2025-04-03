@@ -376,13 +376,13 @@ ORDER BY m.created_at ASC
 
 export async function sendMessageInTeam(user_id, team_id, content) {
   const query = `
-    INSERT into messages (team_id, sender_id, content) VALUES ($1, $2, $3)
+    INSERT into messages (team_id, sender_id, content) VALUES ($1, $2, $3) RETURNING created_at
   `;
   const values = [team_id, user_id, content];
   try {
     const result = await client.query(query, values);
 
-    return { success: true, rows: result.rows };
+    return { success: true, created_at: result.rows[0] };
   } catch (error) {
     throw new Error(error);
   }

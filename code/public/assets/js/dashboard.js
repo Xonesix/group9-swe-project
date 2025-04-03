@@ -2,7 +2,7 @@ const account_name = document.querySelector(".account-name");
 
 window.onload = async () => {
   try {
-    await hydrateEmail();
+    //await hydrateEmail();
     await hydrateTeams();
   } catch (error) {
     console.error(`Error: ${error}`);
@@ -49,22 +49,22 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-// Hydrate Dashboard
-async function hydrateEmail() {
-  try {
-    const response = await fetch("/api/protected/email", {
-      method: "GET",
-    });
+// // Hydrate Dashboard
+// async function hydrateEmail() {
+//   try {
+//     const response = await fetch("/api/protected/email", {
+//       method: "GET",
+//     });
 
-    if (!response.ok) {
-      account_name.textContent = "something went wrong";
-      // window.location.href = "/login";
-    }
+//     if (!response.ok) {
+//       account_name.textContent = "something went wrong";
+//       // window.location.href = "/login";
+//     }
 
-    const result = await response.json();
-    account_name.textContent = result.email;
-  } catch (error) {}
-}
+//     const result = await response.json();
+//     account_name.textContent = result.email;
+//   } catch (error) {}
+// }
 // Hydrate TEams
 async function hydrateTeams() {
   const template = document.getElementById("team-card-template");

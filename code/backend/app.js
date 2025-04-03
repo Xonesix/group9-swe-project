@@ -114,7 +114,9 @@ app.get("/:folder/*", (req, res, next) => {
 
 // SOCKETS
 const teamUsers = new Map(); // Maps teamId -> Set of socket IDs
+// teamId: {1, 2, 3, 4}
 const socketToTeams = new Map(); // Maps socketId -> Set of teamIds for faster disconnection
+// socketId: {team1, team2}
 
 io.on("connection", (socket) => {
   console.log("A user connected");

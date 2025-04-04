@@ -18,6 +18,7 @@ import {
   getAllParticipantsInTeam,
   viewMessagesInTeam,
   sendMessageInTeam,
+  deleteUserFromTeam,
 } from "./db/db.js";
 import { addSession, verifySession } from "./db/redis.js";
 import { Server } from "socket.io";
@@ -125,7 +126,7 @@ io.on("connection", (socket) => {
     .split("; ")
     .find((row) => row.startsWith("auth_token="))
     ?.split("=")[1];
-  console.log(`Cookies ${userCookie}`);
+  // console.log(`Cookies ${userCookie}`);
 
   socket.on("joinTeam", async ({ teamId }) => {
     if (!userCookie) {
@@ -464,6 +465,22 @@ app.post("/api/protected/view-messages-in-team", async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Something Went Wrong" });
+  }
+});
+
+app.delete("/api/protected/leave-team", async (req, res) => {
+  const userId = req.userId;
+  const teamId = req.body.teamId;
+  try {
+    const validate = await validateUserInTeam(userId, teamId);
+    if (validate) {
+      const result = await deleteUserFromTeam(userId, teamId);
+      if (result.success)
+        return res.status(200).json({ message: "Left Team Successfully" });
+      else return res.status(400).json({ message: "Error leaving team" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

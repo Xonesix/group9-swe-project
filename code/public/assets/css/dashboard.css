@@ -266,3 +266,71 @@ body {
   outline: none;
   background-color: red;
 }
+
+.server-message-container {
+  visibility: hidden;
+  opacity: 0;
+  position: fixed;
+  bottom: 10%;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+  animation-timing-function: ease-in-out;
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+}
+
+.server-message-container.active {
+  visibility: visible;
+  animation-name: fade-in;
+}
+
+.server-message-container.fade-out {
+  animation-name: fade-out;
+  animation-duration: 0.5s; /* Add a slight delay for smooth fade-out */
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.server-message-box {
+  width: fit-content;
+  padding-inline: 3rem;
+  background-color: rgba(0, 0, 0, 0.356);
+  backdrop-filter: blur(10px);
+  border-radius: 6px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.server-message-container.success .server-message-box {
+  border: solid rgb(0, 255, 0) 2px;
+}
+.server-message-container.failure .server-message-box {
+  border: solid red 2px;
+}
+.server-message-content {
+  color: white;
+  font-size: 16px;
+}

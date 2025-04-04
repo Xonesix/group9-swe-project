@@ -4,30 +4,24 @@ import { query } from "express";
 import { hashPassword, verifyPassword } from "../utilities/security.js";
 dotenv.config();
 
-const { Client } = pg;
+const { Pool } = pg;
 
-let client;
+const client = new Pool({
+  connectionString: process.env.POSTGRES_CONNECTION_STRING,
+  idleTimeoutMillis: 30000,
+  max: 5,
+});
 
 export async function connectDB() {
-  if (!client) {
-    console.log("Connnecting to DB");
-    client = new Client({
-      connectionString: process.env.POSTGRES_CONNECTION_STRING,
-    });
-    await client.connect();
-  }
+  console.log("Connecting to DB (pool)");
+  await client.query("SELECT 1");
 }
-
 export async function closeDB() {
-  if (client) {
-    await client.end();
-    console.log("Database connection closed.");
-    client = null;
-  }
+  await client.end();
+  console.log("Database pool closed.");
 }
 
 export async function createUser(email, password) {
-  if (!client) await connectDB();
   const query = `
   INSERT INTO users (email, password)
   VALUES ($1, $2) RETURNING *
@@ -45,8 +39,6 @@ export async function createUser(email, password) {
   }
 }
 export async function verifyUser(email, password) {
-  if (!client) await connectDB();
-
   const query = `SELECT id, email, password FROM users WHERE $1 = email`;
   const values = [email];
 
@@ -77,8 +69,6 @@ export async function verifyUser(email, password) {
 }
 
 export async function createTeamAndAddUser(teamName, userId) {
-  if (!client) await connectDB(); // Ensure DB connection
-
   try {
     await client.query("BEGIN"); // Start transaction
 
@@ -105,8 +95,6 @@ export async function createTeamAndAddUser(teamName, userId) {
 }
 
 export async function getTeams(userId) {
-  if (!client) await connectDB(); // Ensure DB connection
-
   // Replace with actual user ID
   try {
     const result = await client.query(
@@ -135,7 +123,6 @@ export async function getTeams(userId) {
 
 // Navbar Email
 export async function getEmail(user_id) {
-  if (!client) await connectDB();
   const query = `
   SELECT email FROM users WHERE id = $1
   `;
@@ -155,7 +142,6 @@ export async function getEmail(user_id) {
 // sendNotification
 
 async function getUserIdFromEmail(email) {
-  if (!client) await connectDB();
   const query = `SELECT id FROM users WHERE email = $1`;
   const values = [email];
 
@@ -168,7 +154,6 @@ async function getUserIdFromEmail(email) {
 }
 export async function validateInviter(user_id, team_id) {
   // If user is part of team, return true;
-  if (!client) await connectDB();
 
   // Check if user is part of team
   const query = `SELECT 1 FROM user_teams_link WHERE team_id = $1 AND user_id = $2`;
@@ -187,8 +172,6 @@ export async function sendInvite(
   recipient_email,
   team_invited_to_id
 ) {
-  if (!client) await connectDB();
-
   const recipient_id = await getUserIdFromEmail(recipient_email);
   if (!recipient_id) {
     throw new Error(`No such user exists with email ${recipient_email}`);
@@ -211,7 +194,6 @@ export async function sendInvite(
 }
 // Internal Validate Invite Function and Reject Invite
 async function validateInvite(invite_id, invitee_id) {
-  if (!client) await connectDB();
   const query = `
     SELECT team_id, status FROM invitations 
     WHERE id = $1 AND invitee_id = $2
@@ -230,7 +212,6 @@ async function validateInvite(invite_id, invitee_id) {
 }
 
 async function updateInviteStatus(invite_id, status) {
-  if (!client) await connectDB();
   const query = `
     UPDATE invitations 
     SET status = $1, updated_at = CURRENT_TIMESTAMP
@@ -243,7 +224,6 @@ async function updateInviteStatus(invite_id, status) {
 }
 
 export async function handleInvite(invite_id, invitee_id, action) {
-  if (!client) await connectDB();
   try {
     // Validate Invite
     const team_id = await validateInvite(invite_id, invitee_id);
@@ -274,7 +254,6 @@ export async function handleInvite(invite_id, invitee_id, action) {
   }
 }
 export async function getAllNotifications(user_id) {
-  if (!client) await connectDB();
   try {
     const query = `
     SELECT i.*, t.name as team_name, u.email as inviter_email 
@@ -305,7 +284,6 @@ View All Messages (validate if can)
 
 // Use this method before any of the message methods (middleware)
 export async function validateUserInTeam(user_id, team_id) {
-  if (!client) await connectDB();
   const query = `
     SELECT 1 
     FROM user_teams_link 
@@ -383,6 +361,17 @@ export async function sendMessageInTeam(user_id, team_id, content) {
     const result = await client.query(query, values);
 
     return { success: true, created_at: result.rows[0] };
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function deleteUserFromTeam(user_id, team_id) {
+  const query = `DELETE FROM user_teams_link WHERE user_id = $1 AND team_id = $2`;
+  const values = [user_id, team_id];
+  try {
+    const result = await client.query(query, values);
+    return { success: true };
   } catch (error) {
     throw new Error(error);
   }

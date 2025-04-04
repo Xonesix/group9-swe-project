@@ -1,6 +1,7 @@
 window.onload = async () => {
   participantViewCancelButton();
   messageSendHandler();
+  leaveTeamButton();
 
   try {
     await hydrateMessages();
@@ -24,6 +25,75 @@ function participantViewCancelButton() {
   cancelButton.addEventListener("click", (e) => {
     parent.classList.remove("active");
   });
+}
+
+function leaveTeamButton() {
+  const button = document.querySelector(".leave-team-button");
+
+  button.addEventListener("click", async (event) => {
+    event.preventDefault();
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const value = params.get("uuid");
+      const response = await fetch("/api/protected/leave-team", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamId: value,
+        }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        serverMessage(
+          true,
+          "Left team successfully! ... Redirecting",
+          "/dashboard"
+        );
+        console.log("team left successfuly");
+      } else {
+        console.error(`Something went wrong: ${response.message} `);
+        serverMessage(false, "Could not leave team");
+      }
+    } catch (error) {
+      console.error(`Something went wrong leaving team ${error}`);
+      serverMessage(false, "Could not leave team");
+    }
+  });
+}
+
+function serverMessage(success, text, redirect = null) {
+  const serverMessageContainer = document.querySelector(
+    ".server-message-container"
+  );
+  const serverMessageText = serverMessageContainer.querySelector(
+    ".server-message-content"
+  );
+  serverMessageContainer.classList.remove("success");
+  serverMessageContainer.classList.remove("failure");
+  serverMessageContainer.classList.remove("active");
+  serverMessageContainer.classList.remove("fade-out");
+
+  if (success) {
+    serverMessageContainer.classList.add("success");
+  } else {
+    serverMessageContainer.classList.add("failure");
+  }
+  serverMessageText.textContent = text;
+
+  serverMessageContainer.classList.add("active");
+  setTimeout(() => {
+    // Code to execute after waiting
+    serverMessageContainer.classList.add("fade-out");
+    setTimeout(() => {
+      serverMessageContainer.classList.remove("active");
+    }, 1000);
+
+    if (redirect) {
+      window.location.replace(redirect);
+    }
+  }, 5000); // 5000 milliseconds = 5 seconds
 }
 
 function messageSendHandler() {

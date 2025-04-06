@@ -69,7 +69,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.resolve(__dirname, "..", "public")));
 
 app.get("/", (req, res) => {
-  res.redirect("/dashboard");
+  res.redirect("/login");
 });
 
 app.get("/:folder", (req, res, next) => {
@@ -216,6 +216,7 @@ app.post("/api/register", async (req, res) => {
 app.post("/api/login", async (req, res) => {
   // Verify
   // Send Cookie
+
   try {
     const email = req.body.email;
     const password = req.body.password;

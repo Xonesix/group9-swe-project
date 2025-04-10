@@ -256,12 +256,12 @@ export async function handleInvite(invite_id, invitee_id, action) {
 export async function getAllNotifications(user_id) {
   try {
     const query = `
-    SELECT i.*, t.name as team_name, u.email as inviter_email 
-    FROM invitations i
-    JOIN teams t ON i.team_id = t.id
-    JOIN users u ON i.inviter_id = u.id
-    WHERE i.invitee_id = $1
-    ORDER BY i.created_at DESC
+      SELECT i.*, t.name AS team_name, u.email AS inviter_email 
+      FROM invitations i
+      JOIN teams t ON i.team_id = t.id
+      JOIN users u ON i.inviter_id = u.id
+      WHERE i.invitee_id = $1 AND i.status = 'pending'
+      ORDER BY i.created_at DESC
     `;
     const values = [user_id];
     const result = await client.query(query, values);

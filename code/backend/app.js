@@ -8,23 +8,15 @@ import {
   closeDB,
   verifyUser,
   getEmail,
-  createTeamAndAddUser,
-  getTeams,
-  sendInvite,
-  handleInvite,
-  getAllNotifications,
-  validateInviter,
   validateUserInTeam,
-  getAllParticipantsInTeam,
-  viewMessagesInTeam,
-  sendMessageInTeam,
-  deleteUserFromTeam,
 } from "./db/db.js";
 import { addSession, verifySession } from "./db/redis.js";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import { text } from "stream/consumers";
+import teamRoutes from "./routes/teams.js";
+import notificationRoutes from "./routes/notification_routes.js";
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
@@ -113,7 +105,7 @@ app.get("/:folder/*", (req, res, next) => {
   });
 });
 
-// SOCKETS
+// SOCKETS (do not separate)
 const teamUsers = new Map(); // Maps teamId -> Set of socket IDs
 // teamId: {1, 2, 3, 4}
 const socketToTeams = new Map(); // Maps socketId -> Set of teamIds for faster disconnection
@@ -187,6 +179,8 @@ io.on("connection", (socket) => {
   });
 });
 
+// base endpoints
+
 app.post("/api/register", async (req, res) => {
   // Store session -> return to home
   try {
@@ -246,18 +240,6 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// /api/*
-app.get("/api", (req, res) => {
-  res.send("Yessir");
-});
-
-// Protected Routes /api/protected/*
-
-app.get("/api/protected/data", async (req, res) => {
-  console.log("ENDPOINT HIT");
-  res.json({ message: "This is protected information", id: `${req.userId}` });
-});
-
 app.get("/api/protected/email", async (req, res) => {
   const id = req.userId;
   try {
@@ -269,230 +251,14 @@ app.get("/api/protected/email", async (req, res) => {
   }
 });
 
-// Teams
-// Create Team
-app.post("/api/protected/create-team", async (req, res) => {
-  const id = req.userId;
-  const teamName = req.body.teamName;
-  try {
-    const teamId = await createTeamAndAddUser(teamName, id);
-    res.status(201).json({ message: "Team Successfully Created" });
-    console.log(`Team created with id ${teamId}`);
-  } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-    console.error(error);
-  }
-});
-
-app.get("/api/protected/get-teams", async (req, res) => {
-  const id = req.userId;
-  try {
-    const result = await getTeams(id);
-    res.status(201).json({ success: true, teams: result });
-  } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-    console.error(error);
-  }
-});
-app.post("/api/protected/send-invite", async (req, res) => {
-  const id = req.userId;
-  const { invitee_email, teamId } = req.body;
-
-  // Basic input validation
-  if (!invitee_email || !teamId) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
-
-  try {
-    // VERIFY IF THIS GUY CAN EVEN INVITE PEOPLE TO THIS TEAM ID
-    const canInvite = await validateInviter(id, teamId);
-    if (!canInvite) {
-      return res.status(403).json({
-        message: "You are not authorized to send invitations for this team",
-      });
-    }
-
-    // Send the invitation
-    const result = await sendInvite(id, invitee_email, teamId);
-
-    // Return success response
-    if (result.success) {
-      return res.status(200).json(result);
-    } else {
-      return res
-        .status(400)
-        .json({ message: result.message || "Failed to send invitation" });
-    }
-  } catch (error) {
-    console.error("Error sending invitation:", error);
-    return res
-      .status(500)
-      .json({ message: error.message || "Something went wrong" });
-  }
-});
-
-app.get("/api/protected/get-notifications", async (req, res) => {
-  const id = req.userId;
-  try {
-    const result = await getAllNotifications(id);
-    return res.status(200).json({ notifications: result });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Something went wrong getting notifications" });
-  }
-});
-
-app.post("/api/protected/handle-invite", async (req, res) => {
-  try {
-    const userId = req.userId;
-    const { invite_id, action } = req.body;
-
-    // Basic validation
-    if (!invite_id || !action || !["accept", "reject"].includes(action)) {
-      return res.status(400).json({ message: "Invalid request parameters" });
-    }
-
-    const result = await handleInvite(invite_id, userId, action);
-    if (result.success) {
-      return res
-        .status(200)
-        .json({ message: `Successfully ${action}ed invitation` });
-    } else {
-      return res
-        .status(400)
-        .json({ message: result.message || `Failed to ${action} invitation` });
-    }
-  } catch (error) {
-    console.error("Error handling invitation:", error);
-    return res
-      .status(500)
-      .json({ message: error.message || "Something went wrong" });
-  }
-});
-// Starting Up
-
-// Messages To Do
-/* 
-  Make sure that
-  Make api to app.get("/api/protected/message")
-  If user not in field, return unauthorized, and redirect back to home page
-
-*/
-
-app.post("/api/protected/get-participants-in-team", async (req, res) => {
-  const userId = req.userId;
-  const teamId = req.body.teamId;
-  const val = await validateUserInTeam(userId, teamId);
-  if (val) {
-    try {
-      const result = await getAllParticipantsInTeam(teamId);
-      return res.status(200).json({ participants: result });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Something went wrong" });
-    }
-  } else {
-    return res.status(401).json({ message: "You are unauthorized" });
-  }
-});
-app.get("/api/protected/view-messages-in-team", async (req, res) => {
-  const userId = req.userId;
-  const teamId = req.body.teamId;
-  const val = await validateUserInTeam(userId, teamId);
-  if (val) {
-    try {
-      const result = await viewMessagesInTeam(teamId);
-      return res.status(200).json({ messages: result });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Something went wrong" });
-    }
-  } else {
-    return res.status(401).json({ message: "You are unauthorized" });
-  }
-});
-
-app.post("/api/protected/send-message-in-team", async (req, res) => {
-  const userId = req.userId;
-  const teamId = req.body.teamId;
-  const content = req.body.content;
-
-  try {
-    const val = await validateUserInTeam(userId, teamId);
-    if (!val) {
-      return res.status(401).json({ message: "You are unauthorized" });
-    }
-
-    const result = await sendMessageInTeam(userId, teamId, content);
-    if (!result.success) {
-      return res.status(400).json({ message: "Failed to send message" });
-    }
-
-    const email = await getEmail(userId);
-
-    // Even if no sockets are connected, message should be considered sent
-    // as it's stored in the database
-    io.to(teamId).emit("newMessage", {
-      sender: email,
-      text: content,
-      date: result.created_at,
-    });
-    const userEmail = await getEmail(userId);
-    return res.status(200).json({
-      message: "Message sent successfully",
-      date: result.created_at,
-      sender: userEmail,
-      text: content,
-    });
-  } catch (error) {
-    console.error("Error sending message:", error);
-    return res.status(500).json({ message: "Something went wrong" });
-  }
-});
-
-app.post("/api/protected/view-messages-in-team", async (req, res) => {
-  const userId = req.userId;
-  const teamId = req.body.teamId;
-  try {
-    const validate = await validateUserInTeam(userId, teamId);
-    if (validate) {
-      const rows = await viewMessagesInTeam(teamId);
-      return res.status(200).json({ messages: rows });
-    } else {
-      return res.status(400).json({ message: "Unauthorized" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Something Went Wrong" });
-  }
-});
-
-app.delete("/api/protected/leave-team", async (req, res) => {
-  const userId = req.userId;
-  const teamId = req.body.teamId;
-  try {
-    const validate = await validateUserInTeam(userId, teamId);
-    if (validate) {
-      const result = await deleteUserFromTeam(userId, teamId);
-      if (result.success)
-        return res.status(200).json({ message: "Left Team Successfully" });
-      else return res.status(400).json({ message: "Error leaving team" });
-    }
-  } catch (error) {
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+// routes are in backend/routes
+app.use("/", notificationRoutes(io));
+app.use("/", teamRoutes(io));
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// General TO DO
-//  websocket messages
-//  WebRTC video meetings
-// Exit Functions
 process.on("SIGINT", async () => {
   await closeDB();
   process.exit(0);

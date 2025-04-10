@@ -30,11 +30,9 @@ const form = document.getElementById("create-team-form");
 
 // Add event listener to form submission (when user clicks submit on create team dialog)
 form.addEventListener("submit", async (event) => {
-
   event.preventDefault();
 
   try {
-    
     // Get the form data from the form element
     const formData = new FormData(form);
 
@@ -62,11 +60,9 @@ form.addEventListener("submit", async (event) => {
     } else {
       throw Error("Somethign went wrong with server");
     }
-
   } catch (error) {
     console.error(`Something went wrong when submitting form: ${error}`);
   }
-
 });
 
 // // Hydrate Dashboard
@@ -88,11 +84,9 @@ form.addEventListener("submit", async (event) => {
 // Hydrate Teams
 // Pretty sure this function just fetches the teams from the server and populates the team cards on the dashboard -Hudson
 async function hydrateTeams() {
-
   const template = document.getElementById("team-card-template");
 
   try {
-
     // Fetch teams from the server
     const response = await fetch("/api/protected/get-teams", {
       method: "GET",
@@ -109,9 +103,11 @@ async function hydrateTeams() {
     const teams = result.teams;
 
     // Check if there are any teams in the response
-    if(teams.length === 0) {
+    if (teams.length === 0) {
       console.log("No teams to display.");
-      document.querySelector(".team-container").innerHTML = '<h3 class="dashboard-error-msg">No teams</h3>';
+      // Change from innerHtml to textContent to make sure create team button doesn't disappear.
+      //  document.querySelector(".team-container").innerHTML = '<h3 class="dashboard-error-msg">No teams</h3>';
+      document.querySelector(".dashboard-error-msg").style.display = "block";
       return;
     }
 
@@ -121,9 +117,7 @@ async function hydrateTeams() {
       clone.querySelector(".chat-button").href = `/chat?uuid=${team.id}`;
       document.querySelector(".team-card-holder").appendChild(clone);
     }
-
   } catch (error) {
     console.error(`Error: ${error}`);
   }
-
 }

@@ -65,3 +65,9 @@ textarea {
 * {
   font-family: "Inter";
 }
+
+.notifications-error-msg, .dashboard-error-msg {
+  color: #fff;
+  text-align: center;
+  width: 100%;
+}

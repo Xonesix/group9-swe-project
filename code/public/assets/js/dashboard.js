@@ -107,13 +107,21 @@ async function hydrateTeams() {
 
     // Populate the wrapper with the team cards
     const teams = result.teams;
+
+    // Check if there are any teams in the response
+    if(teams.length === 0) {
+      console.log("No teams to display.");
+      document.querySelector(".team-container").innerHTML = '<h3 class="dashboard-error-msg">No teams</h3>';
+      return;
+    }
+
     for (const team of teams) {
       const clone = document.importNode(template.content, true);
       clone.querySelector(".team-name").textContent = team.name;
       clone.querySelector(".chat-button").href = `/chat?uuid=${team.id}`;
       document.querySelector(".team-card-holder").appendChild(clone);
     }
-    
+
   } catch (error) {
     console.error(`Error: ${error}`);
   }

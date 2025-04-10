@@ -1,11 +1,16 @@
 const template = document.getElementById("notification-card-template");
 const parent = document.getElementById("notification-parent");
+
+
 window.onload = async () => {
   await hydrateNotifications();
   hydrateButtons();
 };
+
 async function hydrateNotifications() {
   try {
+
+    // Fetch notifications from the server
     const response = await fetch("/api/protected/get-notifications", {
       method: "GET",
     });
@@ -13,10 +18,21 @@ async function hydrateNotifications() {
       console.error("Something went wrong retrieving notifications");
       return;
     }
+
+    // Convert the result to JSON
     const result = await response.json();
 
+    // Access the notifications array from the result
     const notifications = result.notifications;
 
+    // Check if there are any notifications in the response
+    if(notifications.length === 0) {
+      console.log("No notifications to display.");
+      parent.innerHTML = '<h3 class="notifications-error-msg">No notifications</h3>';
+      return;
+    }
+
+    // Fill the wrapper with the notification cards
     for (let notification of notifications) {
       console.log(notification);
       const teamName = notification.team_name;

@@ -26,6 +26,9 @@ const PORT = process.env.PORT || 3000;
 await connectDB();
 
 // Middlewares
+//  THis is just authentication logic, runs before every /api/protected route
+// stores session id in cookie which session id maps to userId in redis.
+// If session exists in redis, continue otherwise do not continue with protected routes
 const sessionMiddleware = async (req, res, next) => {
   console.log("verifying session");
   const userCookie = req.cookies.auth_token;
@@ -64,26 +67,39 @@ app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
+// These are the routes that serve index.html files.
 app.get("/:folder", (req, res, next) => {
+  /* Basically :folder is just a wildcard it can be any thing e.g. if i
+  hit the endpoint of /gibberish then 'gibberish' is now the req.params.folder
+  if this starts with api push it on cause we don't need that
+  but if it doesn't start with /api/ then we assume it's referring to an html file e.g (/dashboard, /login)
+  it takes that and sends the proper html file (in the folder/index.html) route to the user
+  so when you type localhost:3000/dashboard it will properly serve /frontend/dashboard/index.html */
   if (req.params.folder === "api") return next(); // Pass to next middleware
 
   const folderName = req.params.folder;
-
+  // This is the path to find the html files
   const filePath = path.resolve(
+    // dirname is current directory
+    // it looks for html in __dirname/../public/folderName/index.html to see which file to serve
     __dirname,
     "..",
     "public",
     folderName,
     "index.html"
   );
-
+  //  if can't find it then return [page not found] there should be a /404/index.html page but im a lazy bum so it just send 500 error code
   res.sendFile(filePath, (err) => {
     if (err) {
+      // also res is just short for response (this is the response of the server)
+      //  in this case it essentially sends a http 500 code (meaning internal server error) (it should be 404 probably so if you're reading this... change it to 404)
       res.status(err.status || 500).send("Page not found");
     }
   });
 });
 
+// This just does the samething except it works for any internal routes
+// so /public/folderName/xyz/index.html should work as well and serve it up though not tested yet
 app.get("/:folder/*", (req, res, next) => {
   if (req.params.folder === "api") return next(); // Pass to next middleware
 
@@ -106,20 +122,39 @@ app.get("/:folder/*", (req, res, next) => {
 });
 
 // SOCKETS (do not separate)
+/* These basically store the rooms for when a user connects to a team chat. When connecting
+the user connects to a live server connection to enable those instant message popping up live on
+users who are active in that team. When a person clicks on the chat button they join a webSocket server 
+(ifykyk) and join a room specific to that team so when they send a message it only goes to the people in
+that team. If we didn't have web sockets, to get live messages we would either have to poll database 
+within a timeframe (like every 2s [inefficient]) or just forego live messaging
+Sockets being a live server meaning users can communicate with each other real time
+If you want more explnation of the code it's in the io.on() function
+ */
+
+// socketId: {team1, team2}
+/* io this is an external library that simplifies web sockets for us working with raw sockets is tedious
+and this allows us tomake rooms easier
+think of io as the socket route handler.
+io.on('connection') means what the socket is going to do when a user joins the web socket 
+NOTE: if you're a smart cookie you will have noticed that chat/index.html contains a cdn file that actually
+contains the entire io library so we don't have to work with raw webSockets on the frontend either
+That's why /public/assets/js/chat_sockets.js seems a bit abstract and doesn't use vanillaJS apis
+if you want to learn more about this library check out https://socket.io/ */
+
 const teamUsers = new Map(); // Maps teamId -> Set of socket IDs
 // teamId: {1, 2, 3, 4}
 const socketToTeams = new Map(); // Maps socketId -> Set of teamIds for faster disconnection
-// socketId: {team1, team2}
-
 io.on("connection", (socket) => {
   console.log("A user connected");
+  // As soon as a user connects get the session cookie they have
   const cookies = socket.request.headers.cookie || "";
   const userCookie = cookies
     .split("; ")
     .find((row) => row.startsWith("auth_token="))
     ?.split("=")[1];
   // console.log(`Cookies ${userCookie}`);
-
+  //  When the user emits join team (you can see this in chat_sockets.js on the frontend) perform this logic
   socket.on("joinTeam", async ({ teamId }) => {
     if (!userCookie) {
       console.log("Session Failure (No Cookie)");
@@ -128,6 +163,8 @@ io.on("connection", (socket) => {
     }
 
     try {
+      /* This make sure the user belongs to the team
+      If not then don't let them join otherwise they join the teamId room */
       const result = await verifySession(userCookie);
       const uid = result.userId;
 

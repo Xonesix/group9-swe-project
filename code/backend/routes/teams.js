@@ -65,6 +65,8 @@ export default function (io) {
 
       // Even if no sockets are connected, message should be considered sent
       // as it's stored in the database
+      //   This emits the message so when message is confirmed sent, it broadcasts msg to
+      //  update all connected clients display to show the new message
       io.to(teamId).emit("newMessage", {
         sender: email,
         text: content,

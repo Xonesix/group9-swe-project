@@ -28,6 +28,7 @@ class NavBar extends HTMLElement {
             <div class="account">
               <div class="account-popup">
                 <p>{profile-name}</p>
+                <span class="close-btn" onclick="closePopup()">x</span>
               </div>
               <p class="account-name" onclick="profileClick()">Loading...</p>
             </div>
@@ -135,6 +136,10 @@ class NavBar extends HTMLElement {
             display: block;
           }
 
+          .account-popup > .close-btn {
+            cursor: pointer;
+          }
+
         </style>
       `;
 
@@ -164,7 +169,15 @@ class NavBar extends HTMLElement {
 function profileClick() {
   let navRoot = document.querySelector("navigation-bar").shadowRoot;
   let profileBox = navRoot.querySelector(".account-popup");
+
   profileBox.classList.add("active");
+}
+
+function closePopup() {
+  let navRoot = document.querySelector("navigation-bar").shadowRoot;
+  let profileBox = navRoot.querySelector(".account-popup");
+
+  profileBox.classList.remove("active");
 }
 
 customElements.define("navigation-bar", NavBar);

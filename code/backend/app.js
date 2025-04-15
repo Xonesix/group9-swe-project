@@ -281,7 +281,7 @@ app.get("/api/protected/email", async (req, res) => {
   const id = req.userId;
   try {
     const em = await getEmail(id);
-    res.json({ email: em });
+    res.json({ email: em.email, username: em.username });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "something went wrong" });

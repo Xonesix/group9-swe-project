@@ -30,7 +30,7 @@ class NavBar extends HTMLElement {
                 <div class="popup-header">
                   <div class="btn-close" onclick="closePopup()">x</div>
                 </div>
-                <p>{profile-name}</p>
+                <p id="profile-name-text">{profile-name}</p>
               </div>
               <p class="account-name" onclick="profileClick()">Loading...</p>
             </div>
@@ -167,6 +167,8 @@ class NavBar extends HTMLElement {
 
       const result = await response.json();
       accountName.textContent = result.email;
+      this.shadowRoot.getElementById("profile-name-text").textContent =
+        result.username;
     } catch (error) {
       console.error(error);
       accountName.textContent = "Error loading account";

@@ -124,13 +124,13 @@ export async function getTeams(userId) {
 // Navbar Email
 export async function getEmail(user_id) {
   const query = `
-  SELECT email FROM users WHERE id = $1
+  SELECT email, username FROM users WHERE id = $1
   `;
   const values = [user_id];
 
   try {
     const res = await client.query(query, values);
-    return res.rows[0].email;
+    return res.rows[0];
   } catch (error) {
     throw new Error(`Some Error ${error}`);
   }

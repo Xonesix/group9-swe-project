@@ -144,6 +144,7 @@ class NavBar extends HTMLElement {
             width: 25px;
             height: 25px;
             text-align: center;
+            border-bottom-right-radius: 50%;
             cursor: pointer;
           }
 

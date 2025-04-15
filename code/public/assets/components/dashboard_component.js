@@ -26,7 +26,10 @@ class NavBar extends HTMLElement {
               <span>Notifications</span>
             </a>
             <div class="account">
-              <p class="account-name">Loading...</p>
+              <div class="account-popup">
+                <p>{profile-name}</p>
+              </div>
+              <p class="account-name" onclick="profileClick()">Loading...</p>
             </div>
         </div>
         <style>
@@ -110,6 +113,28 @@ class NavBar extends HTMLElement {
           .icon-holder > svg {
             color:inherit;
           }
+
+          .account-name {
+            cursor: pointer;
+          }
+
+          /* account popup */
+          .account-popup {
+            position: absolute;
+            display: none;
+            padding: 5px;
+            width: calc(100% - 10px);
+            height: 300px;
+            background: #333;
+            margin-top: -300px;
+            border-radius: 15px;
+            z-index: 500;
+          }
+
+          .account-popup.active {
+            display: block;
+          }
+
         </style>
       `;
 
@@ -134,6 +159,12 @@ class NavBar extends HTMLElement {
       accountName.textContent = "Error loading account";
     }
   }
+}
+
+function profileClick() {
+  let navRoot = document.querySelector("navigation-bar").shadowRoot;
+  let profileBox = navRoot.querySelector(".account-popup");
+  profileBox.classList.add("active");
 }
 
 customElements.define("navigation-bar", NavBar);

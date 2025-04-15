@@ -27,8 +27,10 @@ class NavBar extends HTMLElement {
             </a>
             <div class="account">
               <div class="account-popup">
+                <div class="popup-header">
+                  <div class="btn-close" onclick="closePopup()">x</div>
+                </div>
                 <p>{profile-name}</p>
-                <span class="close-btn" onclick="closePopup()">x</span>
               </div>
               <p class="account-name" onclick="profileClick()">Loading...</p>
             </div>
@@ -123,12 +125,12 @@ class NavBar extends HTMLElement {
           .account-popup {
             position: absolute;
             display: none;
-            padding: 5px;
+            margin-top: -300px;
             width: calc(100% - 10px);
             height: 300px;
             background: #333;
-            margin-top: -300px;
             border-radius: 15px;
+            overflow: hidden;
             z-index: 500;
           }
 
@@ -136,7 +138,12 @@ class NavBar extends HTMLElement {
             display: block;
           }
 
-          .account-popup > .close-btn {
+          .account-popup > .popup-header > .btn-close {
+            background: #c22;
+            margin-bottom: 5px;
+            width: 25px;
+            height: 25px;
+            text-align: center;
             cursor: pointer;
           }
 

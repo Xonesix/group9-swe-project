@@ -34,7 +34,10 @@ function displayNewMessage(msg) {
   const template = document.getElementById("message-card-template");
   const parent = document.querySelector(".messages");
   const clone = document.importNode(template.content, true);
-  clone.querySelector(".messenger-email").textContent = msg.sender;
+
+  console.log(JSON.stringify(msg));
+
+  clone.querySelector(".messenger-email").textContent = msg.sender.email;
   clone.querySelector(".message-content").textContent = msg.text;
 
   // Format the date

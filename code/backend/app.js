@@ -277,6 +277,33 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+/**
+ * I have not done extensive testing on this yet but it should work
+ * I also have basically no backend experience so hopefully this is good
+ * -Hudson Green
+**/
+app.post("/api/logout", async (req, res) => {
+  // Clear session cookie
+  try {
+
+    // This is the cookie that was set when the user logged in
+    const userCookie = req.cookies.auth_token;
+
+    // Ensure we are not already logged out
+    if(!userCookie) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    
+    // Clear the session in Redis
+    res.clearCookie("auth_token");
+    res.status(200).json({ message: "Logged out successfully" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.get("/api/protected/email", async (req, res) => {
   const id = req.userId;
   try {

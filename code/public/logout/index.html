@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Logging out...</title>
+	</head>
+	<body>
+		<h1>Logging out...</h1>
+		<p>You are being logged out. Please wait...</p>
+		<script>
+			async function logout() {
+				// make some api call to log out the user
+				const response = await fetch('/api/logout', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+				if (response.ok) {
+					// we successfully logged out the user
+					console.log('Logged out successfully!');
+				} else {
+					// handle error
+					console.log('Error logging out. Please try again. You may already be logged out.');
+				}
+				window.location.href = '/login';
+			}
+			logout();
+		</script>
+	</body>
+</html>

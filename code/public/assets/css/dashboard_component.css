@@ -1,0 +1,181 @@
+.logo {
+	height: 75px;
+	text-align: center;
+	font-size: 2.0rem;
+}
+
+.logo > span {
+	display: block;
+	font-size: 0.8rem;
+	position: absolute;
+	margin-bottom: -1rem;
+	margin-left: -20px;
+}
+
+.navigation-menu {
+	color: white;
+	background-color:rgb(11, 11, 11);
+	width: fit-content;
+	min-width: 200px;
+	max-width: 300px;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items:center;
+	gap: 1rem;
+}
+
+.nav-link {
+	width: 150px;
+	height: 70px;
+	display: flex;
+	padding-inline: 1.5rem;
+	gap:0rem;
+	justify-content: flex-start;
+	align-items: center;
+	transition: all linear 0.2s;
+	text-decoration: none;
+	color: inherit;
+}
+
+.nav-link:hover {
+	background-color: rgb(45, 45, 45);
+}
+
+.nav-link.active {
+	background-color:rgb(233, 233, 233);
+	color:black;
+	font-weight:600;
+
+}
+
+.account {
+	margin-top: auto;
+	margin-bottom: 0;
+	width: 100%;
+	text-align: center;
+	position: relative;
+}
+
+.account::before {
+	content: '';
+	height: 2px;
+	width: 100%;
+	position: absolute;
+	top:0;
+	left:0;
+	background-color:rgb(29, 29, 29);
+	z-index:4;
+}
+
+.icon-holder {
+	width:24px;
+	height:24px;
+	padding:10px;
+	border-radius:4px;
+}
+
+.icon-holder > svg {
+	color:inherit;
+}
+
+.account-name {
+	margin: 0;
+	padding: 15px 5px;
+	cursor: pointer;
+	transition: 0.5s;
+}
+
+.account-name:hover {
+	background-color: rgb(45, 45, 45);
+	color: white;
+}
+
+
+/**
+ * Related to the profile card popup box
+**/
+
+/* the invisible box that is used to dismiss the profile card */
+.unfocus-box {
+	display: block;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 495;
+}
+
+.unfocus-box.inactive {
+	display: none;
+}
+
+/* account popup */
+.account-popup {
+	--account-popup-height: 350px;
+	position: absolute;
+	/*margin-top: calc(-15px - var(--account-popup-height));*/
+	margin-top: calc(28px - var(--account-popup-height));
+	margin-left: calc(100% + 15px);
+	height: var(--account-popup-height);
+	border: 0;
+	z-index: 500;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.account-popup.active {
+	opacity: 1;
+	pointer-events: all;
+}
+
+/* popup arrow */
+.account-popup:before {
+	content: '';
+	position: absolute;
+	bottom: 0px;
+	left: -16px;
+	border-top: 15px solid #222;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	transform: rotate(90deg);
+	z-index: 499;
+}
+
+.account-popup > .wrapper {
+	background: #222;
+	padding: 8px;
+	width: 100%;
+	max-width: 300px;
+	height: 100%;
+	overflow: hidden;
+	border-radius: 15px;
+}
+
+.popup-header {
+	background: #333;
+	margin: -8px;
+	padding: 8px;
+}
+
+.popup-header > img.profile-img {
+	display: block;
+	margin: 10px auto;
+	width: 75px;
+	height: 75px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+}
+
+.popup-body {
+	padding-top: 10px;
+
+}
+
+.popup-body > a {
+	display: block;
+	padding: 5px;
+	width: 100%;
+	color: #fff;
+}

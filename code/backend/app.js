@@ -67,6 +67,9 @@ app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
+// for ejs support
+app.set("view engine", "ejs");
+
 // These are the routes that serve index.html files.
 app.get("/:folder", (req, res, next) => {
   /* Basically :folder is just a wildcard it can be any thing e.g. if i
@@ -93,7 +96,11 @@ app.get("/:folder", (req, res, next) => {
     if (err) {
       // also res is just short for response (this is the response of the server)
       //  in this case it essentially sends a http 500 code (meaning internal server error) (it should be 404 probably so if you're reading this... change it to 404)
-      res.status(err.status || 500).send("Page not found");
+      res.status(err.status || 500)/*.send("Page not found")*/;
+      res.render("error", {
+        title: "404 - Page Not Found",
+        message: "The page you are looking for does not exist.",
+      });
     }
   });
 });

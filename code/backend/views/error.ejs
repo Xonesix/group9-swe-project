@@ -3,12 +3,13 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title><%= locals.title %></title>
+		<title><%= locals.title || "Error" %></title>
+		<link rel="stylesheet" href="/assets/css/main.css">
 	</head>
 	<body>
 		<div class="container">
-			<h1><%= locals.title %></h1>
-			<p><%= locals.message %></p>
+			<h1><%= locals.title || "Error" %></h1>
+			<p><%= locals.message || "An error occured. Additionally, we were unable to get the error message." %></p>
 			<a href="/">Go back to home</a>
 		</div>
 </html>

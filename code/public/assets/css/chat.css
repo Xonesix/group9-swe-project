@@ -296,14 +296,10 @@
 }
 .messages {
   width: 100%;
-  height: calc(100% - 75px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: auto;
-  max-height: 80%;
-  overflow-y: auto;
-  padding-bottom: 10rem;
   overflow-y: scroll;
 }
 

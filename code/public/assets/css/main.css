@@ -73,3 +73,14 @@ textarea {
   text-align: center;
   width: 100%;
 }
+
+.menu-bar {
+  width: 100%;
+  height: var(--height-navbar);
+  background: rgba(0, 0, 0, 0.023);
+  box-sizing: border-box;
+  backdrop-filter: blur(1px);
+  border-bottom: solid rgba(255, 255, 255, 0.099) 2px;
+  padding-inline: 1rem;
+  color: white;
+}

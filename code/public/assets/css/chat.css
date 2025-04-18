@@ -70,13 +70,12 @@
 .menu-bar {
   display: flex;
   align-items: center;
-  height: var(--height-navbar);
 }
 .menu-button-container {
   margin-left: auto;
   display: flex;
   gap: 1rem;
-  margin-right: 3rem;
+  margin-right: 10px;
 }
 .invite-button {
   border: none;

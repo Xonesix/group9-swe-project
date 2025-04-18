@@ -3,6 +3,8 @@
   --light-gray: rgb(149, 149, 149);
   --gray: rgb(45, 45, 45);
   --dark-gray: rgb(25, 25, 25);
+
+  --height-navbar: 85px;
 }
 body {
   padding: 0;

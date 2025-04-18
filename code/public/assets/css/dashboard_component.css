@@ -1,15 +1,17 @@
 .logo {
-	height: 75px;
+	background: #222;
+	display: block;
+	padding-top: 8px;
+	width: 100%;
+	height: calc(var(--height-navbar) - 8px);
 	text-align: center;
 	font-size: 2.0rem;
 }
 
-.logo > span {
+.logo span {
 	display: block;
 	font-size: 0.8rem;
-	position: absolute;
-	margin-bottom: -1rem;
-	margin-left: -20px;
+	margin-top: 10px;
 }
 
 .navigation-menu {

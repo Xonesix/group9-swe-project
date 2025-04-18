@@ -209,6 +209,7 @@ async function hydrateParticipants() {
 }
 // Fetching Messages
 async function hydrateMessages() {
+
   const params = new URLSearchParams(window.location.search);
   const value = params.get("uuid");
   const response = await fetch("/api/protected/view-messages-in-team", {
@@ -221,15 +222,31 @@ async function hydrateMessages() {
     }),
   });
   const result = await response.json();
+
   if (!response.ok) {
     console.error(result.message);
     return;
   }
+
+  // get our own email
+  const emailResponse = await fetch("/api/protected/email", { method: "GET" });
+  const emailResult = await emailResponse.json();
+
+  if(!emailResponse.ok) {
+    console.error(emailResult.message);
+    return;
+  }
+
   const template = document.getElementById("message-card-template");
   const parent = document.querySelector(".messages");
+
   console.log(result.messages);
+
+  // Clone the template for each message and populate it with data
   for (const msg of result.messages) {
+
     const clone = document.importNode(template.content, true);
+    //clone.querySelector(".messenger-username").textContent = msg.username;
     clone.querySelector(".messenger-email").textContent = msg.email;
     clone.querySelector(".message-content").textContent = msg.content;
 
@@ -238,6 +255,13 @@ async function hydrateMessages() {
     const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     clone.querySelector(".date-created").textContent = formattedDate;
 
+    // Check if the message is from the current user
+    if(msg.email === emailResult.email) {
+      clone.querySelector(".message-content-container").classList.add("self-message");
+    }
+
     parent.appendChild(clone);
+
   }
+
 }

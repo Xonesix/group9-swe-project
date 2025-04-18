@@ -5,17 +5,15 @@
   --dark-gray: rgb(25, 25, 25);
 }
 .chat-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  position: relative;
+  height: calc(100% - var(--height-navbar));
 }
 .message-box {
   margin-top: auto;
-  position: fixed;
+  height: 75px;
+  line-height: 75px;
   bottom: 0;
-  width: clamp(400px, 90%, 1200px);
+  /*width: clamp(400px, 90%, 1200px);*/
+  width: 100%;
 }
 .message-input {
   width: 100%;
@@ -39,7 +37,7 @@
   justify-content: center;
   align-items: center;
   gap: 3rem;
-  padding: 1rem;
+  padding: 0 1rem;
 }
 .submit-message-button {
   display: flex;
@@ -68,29 +66,11 @@
   height: auto;
 }
 
-/* MESSAGES */
-.messages {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: auto;
-  max-height: 80%;
-  overflow-y: auto;
-  padding-bottom: 10rem;
-}
-.message-card {
-  width: 100%;
-  justify-content: center;
-}
-.message-card {
-  color: white;
-}
-
 /* INVITE */
 .menu-bar {
   display: flex;
   align-items: center;
+  height: var(--height-navbar);
 }
 .menu-button-container {
   margin-left: auto;
@@ -309,6 +289,34 @@
   transform: scale(125%) rotate(90deg);
 }
 
+/* MESSAGES */
+.messages-wrapper {
+  display: block;
+  width: 100%;
+  height: calc(100% - 75px);
+}
+.messages {
+  width: 100%;
+  height: calc(100% - 75px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+  max-height: 80%;
+  overflow-y: auto;
+  padding-bottom: 10rem;
+  overflow-y: scroll;
+}
+
+.message-card {
+  width: 100%;
+  max-width: 800px;
+  justify-content: center;
+}
+.message-card {
+  color: white;
+}
+
 /* Message Cards */
 
 .message-content-container {
@@ -320,6 +328,12 @@
   border-radius: 10px;
   text-wrap: wrap;
 }
+
+.message-content-container.self-message {
+  float: right;
+  background: var(--light-gray);
+}
+
 .messenger-email {
   margin: 0;
   font-weight: bold;

@@ -19,6 +19,7 @@
     <template id="message-card-template">
       <div class="message-card">
         <div class="message-content-container">
+          <span class="messenger-username"></span>
           <p class="messenger-email"></p>
           <sub class="date-created"></sub>
           <p class="message-content"></p>
@@ -70,7 +71,9 @@
           </div>
         </div>
         <div class="chat-container">
-          <div class="messages"></div>
+          <div class="messages-wrapper">
+            <div class="messages"></div>
+          </div>
           <div class="message-box">
             <form action="" class="message-container" id="message-send-form">
               <div class="message-input">

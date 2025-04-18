@@ -37,6 +37,7 @@ function displayNewMessage(msg) {
 
   console.log(JSON.stringify(msg));
 
+  //clone.querySelector(".messenger-username").textContent = msg.sender.username;
   clone.querySelector(".messenger-email").textContent = msg.sender.email;
   clone.querySelector(".message-content").textContent = msg.text;
 

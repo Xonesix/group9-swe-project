@@ -9,7 +9,7 @@ class NavBar extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <link ref="stylesheet" href="/assets/css/dashboard_component.css" rel="stylesheet" />
       <div class="navigation-menu">
-        <div class="logo">Disteams<br /><span>Plz come up with better name</span></div>
+        <div class="logo">TeamChat<br /><span>Gather, Plan, Talk</span></div>
         <div class="nav-links">
           <a class="nav-link" href="/dashboard">
             <div class="icon-holder">

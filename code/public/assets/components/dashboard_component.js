@@ -58,7 +58,7 @@ class NavBar extends HTMLElement {
       if (!response.ok) {
         accountName.textContent = "Something went wrong";
         // UNCOMMENT ON PROD
-        // window.location.replace("/login");
+        window.location.replace("/login");
         return;
       }
 

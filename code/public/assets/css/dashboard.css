@@ -110,6 +110,7 @@ body {
 }
 
 /* Add team menu */
+.yes-no-form,
 .add-team {
   opacity: 0;
   visibility: hidden;
@@ -124,10 +125,12 @@ body {
   z-index: 2;
   transition: all ease-in-out 0.2s;
 }
+.yes-no-form.active,
 .add-team.active {
   visibility: visible;
   opacity: 100%;
 }
+#name-change-form,
 #create-team-form {
   display: flex;
   flex-direction: column;
@@ -147,6 +150,8 @@ body {
   initial-value: 0deg;
   inherits: false;
 }
+#name-change-form::after,
+#name-change-form::before,
 #create-team-form::after,
 #create-team-form::before {
   content: "";
@@ -170,6 +175,7 @@ body {
   z-index: -1;
   animation: spin 3s linear infinite;
 }
+#name-change-form::before,
 #create-team-form::before {
   filter: blur(1.5rem);
   opacity: 0.5;
@@ -188,6 +194,7 @@ body {
   font-weight: 500;
   color: var(--light-gray);
 }
+.name-change-form-title,
 .create-form-title {
   font-size: 30px;
 }
@@ -208,6 +215,7 @@ body {
 .input-field:focus {
   border: solid var(--accent-one) 2px;
 }
+.submit-name-change-button,
 .submit-button {
   background-color: var(--accent-one);
   padding-block: 0.5rem;
@@ -221,6 +229,8 @@ body {
   border: transparent solid 2px;
   cursor: pointer;
 }
+.submit-name-change-button:focus,
+.submit-name-change-button:hover,
 .submit-button:focus,
 .submit-button:hover {
   transform: translateY(-5px);
@@ -238,6 +248,7 @@ body {
   gap: 4.5rem;
   width: 100%;
 }
+.cancel-name-change-button,
 .cancel-button {
   background-color: transparent;
   padding-block: 0.5rem;
@@ -252,6 +263,8 @@ body {
   margin-top: 0.5rem;
   cursor: pointer;
 }
+.cancel-name-change-button:hover,
+.cancel-name-change-button:focus,
 .cancel-button:hover,
 .cancel-button:focus {
   transform: translateY(-5px);

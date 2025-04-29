@@ -181,3 +181,8 @@
 	width: 100%;
 	color: #fff;
 }
+
+#profile-name-text::before{
+	content: "@";
+	pointer-events: none;
+}

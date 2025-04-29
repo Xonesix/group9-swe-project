@@ -9,8 +9,7 @@ class NavBar extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <link ref="stylesheet" href="/assets/css/dashboard_component.css" rel="stylesheet" />
       <div class="navigation-menu">
-        <div class="logo">Squads<br /><span>Gather, Plan, Talk</span></div>
-        <div class="nav-links">
+        <div class="logo">Squads<br /><span>Gather, Plan, Talk</span></div>        <div class="nav-links">
           <a class="nav-link" href="/dashboard">
             <div class="icon-holder">
               <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -34,7 +33,7 @@ class NavBar extends HTMLElement {
               <div class="wrapper">
                 <div class="popup-header">
                   <img src="/assets/images/default-profile.jpg" alt="Profile Image" class="profile-img" />
-                  <p id="profile-name-text">null</p>
+                  <span contenteditable="true" id="profile-name-text">null</span>
                   <p id="profile-email-text">...</p>
                 </div>
                 <div class="popup-body">
@@ -68,12 +67,13 @@ class NavBar extends HTMLElement {
 
       // username with @
       let username = "";
+      console.log("Gotten username", result.username);
       if(result.username)
-        username = '@' + result.username;
+        username = result.username;
       else
         username = "Name Unset";
 
-      accountName.textContent = username;
+      accountName.textContent = "@" + username;
 
       this.shadowRoot.getElementById("profile-name-text").textContent = username;
 
@@ -82,6 +82,64 @@ class NavBar extends HTMLElement {
       console.error(error);
       accountName.textContent = "Error loading account";
     }
+
+    // START --- code to update username via popup panel
+    let updateUsernameField = false;
+    const usernameField = this.shadowRoot.getElementById("profile-name-text") // selects username in popup by id
+    let prevUsername = usernameField.innerText;
+    // Done trigger the update until user is done editing (input + focusout)
+    usernameField.addEventListener("input", (event) => {
+      updateUsernameField = true;
+    });
+    usernameField.addEventListener("focusout", (event) => {
+      updateUsernameField = false;
+      // no duplicates
+      if (usernameField.innerText == prevUsername){
+        return;
+      }
+      if(document.getElementsByClassName("cancel-name-change-button").length > 0){
+        document.getElementById("name-change-div").classList.add("active");
+        document.getElementsByClassName("name-change-form-title")[0].innerText = `Change name to: ${usernameField.innerText}?`;
+      }
+      else {
+        // add the yes or no form
+        document.getElementsByClassName("add-team")[0].insertAdjacentHTML("afterend", `<div class="yes-no-form active" id="name-change-div">
+        <form action="" id="name-change-form">
+            <h2 class="name-change-form-title">Change name to: ${usernameField.innerText}?</h2>
+            <div class="button-container">
+              <button class="cancel-name-change-button" type="button">Cancel</button>
+              <button type="submit" class="submit-name-change-button">Yes</button>
+            </div>
+          </form>
+        </div>`);
+      }
+      console.log("Might update username: ", usernameField.innerText);
+
+      const nameChangeCancel = document.getElementsByClassName("cancel-name-change-button")[0];
+
+      nameChangeCancel.addEventListener("click", (event) => {
+        document.getElementById("name-change-div").classList.remove("active");
+        usernameField.innerText = prevUsername;
+      });
+      
+      const nameChangeSubmit = document.getElementsByClassName("submit-name-change-button")[0];
+
+      nameChangeSubmit.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const response = await fetch("/api/protected/updateUsername", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({username: usernameField.innerText}),
+        });
+        const result = await response.json();
+        prevUsername = usernameField.innerText;
+        const accountName = this.shadowRoot.querySelector(".account-name");
+        accountName.textContent = "@" + usernameField.innerText;
+        document.getElementById("name-change-div").classList.remove("active");
+      });  
+    });
+    // END --- code to update username via popup panel
 
     let profileBox = this.shadowRoot.querySelector(".account-popup");
     let unfocusBox = this.shadowRoot.querySelector(".unfocus-box");

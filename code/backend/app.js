@@ -9,6 +9,7 @@ import {
   verifyUser,
   getEmail,
   validateUserInTeam,
+  updateUsername,
 } from "./db/db.js";
 import { addSession, verifySession } from "./db/redis.js";
 import { Server } from "socket.io";
@@ -318,6 +319,21 @@ app.get("/api/protected/email", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "something went wrong" });
+  }
+});
+
+app.post("/api/protected/updateUsername", async (req, res) => {
+  try{
+    const id = req.userId;
+    const username = req.body.username;
+    const usernameSuccess = await updateUsername(id, username);
+    console.log(req.body);
+    if(usernameSuccess == true){
+      res.status(200).json({"message": "username updated"});
+    }
+  } catch (error){
+    console.log("error with updateUsername request: ", error);
+    res.status(500).json({"message": "error updating username"});
   }
 });
 

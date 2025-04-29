@@ -136,6 +136,26 @@ export async function getEmail(user_id) {
   }
 }
 
+export async function updateUsername(user_id, new_username){
+  const query = `UPDATE users SET username = $2 WHERE id = $1`;
+  const values = [user_id, new_username];
+  console.log("Updating username for: ", user_id)
+  console.log("Values: ", values)
+  try {
+    await client.query("BEGIN"); // begins the transaction
+    
+    const res = await client.query(query, values); // update the username
+    
+    await client.query("COMMIT");
+    
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error updating username");
+    throw new Error(`Some Error ${error}`);
+  }
+}
+
 // NOTIFICATION FUNCTIONALITY
 // getAllNotifications
 // handleNotification
